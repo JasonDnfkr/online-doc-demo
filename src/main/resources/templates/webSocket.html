@@ -1,109 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh">
+
 <head xmlns="http://www.w3.org/1999/html">
+    <meta charset="UTF-8">
     <style>
-        .editing-users {
-            background-color: lightgray;
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #FFFFFF;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        div#content-area {
+            width: 80%;
+            max-width: 600px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        textarea#content {
+            width: 100%;
             padding: 10px;
+            border: 1px solid #333;
+            background-color: #000;
+            color: #FFFFFF;
+            box-sizing: border-box;
+            height: 150px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 10px 5px;
+            /* Added margin for spacing between buttons */
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        div.editing-users {
+            background-color: #262626;
+            /* Adjusted to fit the dark theme */
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        ul#editing-users-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
         }
     </style>
-    <meta charset="UTF-8">
 </head>
+
 <body>
-<div>
-    <textarea id="content" readonly></textarea>
-    </br>
-    <button id="edit-button">编辑</button>
-    <button id="save-button">保存</button>
-</div>
-</br>
-<div>当前用户:</div><div id="user-name-label"> </div>
-</br>
-<div className="editing-users">
-    <p id="editing-users-label">同时编辑的用户:</p>
-    <ul id="editing-users-list"></ul>
-</div>
-<script>
-    const socket = new WebSocket("ws://localhost:8890/shared");
-    const content = document.getElementById("content");
-    const editButton = document.getElementById("edit-button");
-    const saveButton = document.getElementById("save-button");
-    const editingUsersLabel = document.getElementById("editing-users-label");
-    const editingUsersList = document.getElementById("editing-users-list");
-    const currentEditUserName = document.getElementById("user-name-label");
-    socket.onopen = function () {
-        const username = prompt("Enter your username");
-        //用户创建登陆了
-        socket.send(
-            JSON.stringify({
-                type: "connect",
-                username: username
-            })
-        );
-        //显示当前用户
-        currentEditUserName.innerHTML = username;
-        //获取当前文本同时编辑的用户
-        socket.send(
-            JSON.stringify({
-                type: "getUser",
-            })
-        );
-    };
 
-    socket.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-
-        if (data === null || typeof data.type === "undefined") {
-            console.log("data:"+ data)
-            return;
-        }
-        switch (data.type) {
-            case "update":
-                content.value = data.content;
-                break;
-            case "editing":
-                editingUsersList.innerHTML = "";
-                data.editingUsers.forEach(function (username) {
-                    const li = document.createElement("li");
-                    li.textContent = username;
-                    editingUsersList.appendChild(li);
-                });
-                //可以选择没人编辑的时候隐藏当前列表
-                // if (data.editingUsers.length === 0) {
-                //     editingUsersLabel.style.display = "none";
-                // } else {
-                //     editingUsersLabel.style.display = "block";
-                // }
-                break;
-        }
-    };
+    <div id="content-area">
+        <textarea id="content" readonly>在此输入内容。</textarea>
+        <br />
+        <button id="edit-button">编辑</button>
+        <button id="save-button">保存</button>
+    </div>
+    <br />
+    <div>当前用户:</div>
+    <div id="user-name-label"> </div>
+    <br />
+    <div className="editing-users">
+        <p id="editing-users-label">同时编辑的用户:</p>
+        <ul id="editing-users-list"></ul>
+    </div>
 
 
-    editButton.addEventListener("click", function () {
-        content.removeAttribute("readonly");
-        socket.send(
-            JSON.stringify({
-                type: "start-editing"
-            })
-        );
-    });
+    <script>
+        const socket = new WebSocket("ws://localhost:8890/shared");
+        const content = document.getElementById("content");
+        const editButton = document.getElementById("edit-button");
+        const saveButton = document.getElementById("save-button");
+        const editingUsersLabel = document.getElementById("editing-users-label");
+        const editingUsersList = document.getElementById("editing-users-list");
+        const currentEditUserName = document.getElementById("user-name-label");
+        socket.onopen = function () {
+            const username = prompt("Enter your username");
+            //用户创建登陆了
+            socket.send(
+                JSON.stringify({
+                    type: "connect",
+                    username: username
+                })
+            );
+            //显示当前用户
+            currentEditUserName.innerHTML = username;
+            //获取当前文本同时编辑的用户
+            socket.send(
+                JSON.stringify({
+                    type: "getUser",
+                })
+            );
+        };
 
-    saveButton.addEventListener("click", function () {
-        //点击保存后输入框变为只读
-        content.setAttribute("readonly", "true");
-        socket.send(
-            JSON.stringify({
-                type: "stop-editing"
-            })
-        );
-    });
-    content.addEventListener("input", function () {
-        console.log("变动信息:" + content.value);
-        socket.send(
-            JSON.stringify({
-                type: "update",
-                content: content.value
-            })
-        );
-    });
-</script>
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+
+            if (data === null || typeof data.type === "undefined") {
+                console.log("data:" + data)
+                return;
+            }
+            switch (data.type) {
+                case "update":
+                    content.value = data.content;
+                    break;
+                case "editing":
+                    editingUsersList.innerHTML = "";
+                    data.editingUsers.forEach(function (username) {
+                        const li = document.createElement("li");
+                        li.textContent = username;
+                        editingUsersList.appendChild(li);
+                    });
+                    //可以选择没人编辑的时候隐藏当前列表
+                    // if (data.editingUsers.length === 0) {
+                    //     editingUsersLabel.style.display = "none";
+                    // } else {
+                    //     editingUsersLabel.style.display = "block";
+                    // }
+                    break;
+            }
+        };
+
+
+        editButton.addEventListener("click", function () {
+            content.removeAttribute("readonly");
+            socket.send(
+                JSON.stringify({
+                    type: "start-editing"
+                })
+            );
+        });
+
+        saveButton.addEventListener("click", function () {
+            //点击保存后输入框变为只读
+            content.setAttribute("readonly", "true");
+            socket.send(
+                JSON.stringify({
+                    type: "stop-editing"
+                })
+            );
+        });
+        content.addEventListener("input", function () {
+            console.log("变动信息:" + content.value);
+            socket.send(
+                JSON.stringify({
+                    type: "update",
+                    content: content.value
+                })
+            );
+        });
+    </script>
 </body>
+
 </html>
