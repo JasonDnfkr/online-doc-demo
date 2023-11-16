@@ -155,7 +155,7 @@
             </div>
         </div>
 
-        <textarea id="content" readonly>在此输入内容。</textarea>
+        <textarea id="content" readonly>协同文本框 ... </textarea>
         <div class="button-container">
             <button id="edit-button">编辑</button>
             <button id="save-button">保存</button>
@@ -166,7 +166,7 @@
         </div>
 
         <div className="editing-users">
-            <p id="editing-users-label">同时编辑的用户:</p>
+            <p id="editing-users-label">当前单元格用户:</p>
             <ul id="editing-users-list">
                 <!-- User list items will be dynamically inserted here -->
             </ul>
@@ -184,17 +184,20 @@
         const editingUsersList = document.getElementById("editing-users-list");
         const currentEditUserName = document.getElementById("user-name-label");
         socket.onopen = function () {
-            const username = prompt("Enter your username");
-            //用户创建登陆了
+            const username = prompt("登录：请输入账户名");
+
+            // 用户登录
             socket.send(
                 JSON.stringify({
                     type: "connect",
                     username: username
                 })
             );
-            //显示当前用户
+
+            // 显示当前用户
             currentEditUserName.innerHTML = username;
-            //获取当前文本同时编辑的用户
+
+            // 获取当前文本同时编辑的用户
             socket.send(
                 JSON.stringify({
                     type: "getUser",
@@ -220,12 +223,13 @@
                         li.textContent = username;
                         editingUsersList.appendChild(li);
                     });
-                    //可以选择没人编辑的时候隐藏当前列表
-                    // if (data.editingUsers.length === 0) {
-                    //     editingUsersLabel.style.display = "none";
-                    // } else {
-                    //     editingUsersLabel.style.display = "block";
-                    // }
+
+                    // 没人编辑的时候隐藏当前列表
+                    if (data.editingUsers.length === 0) {
+                        editingUsersLabel.style.display = "none";
+                    } else {
+                        editingUsersLabel.style.display = "block";
+                    }
                     break;
             }
         };
