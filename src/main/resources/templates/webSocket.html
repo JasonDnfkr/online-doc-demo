@@ -3,24 +3,76 @@
 
 <head xmlns="http://www.w3.org/1999/html">
     <meta charset="UTF-8">
+    <title>文档编辑器</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #121212;
             color: #FFFFFF;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
         }
 
-        div#content-area {
+        .container {
             width: 80%;
             max-width: 600px;
             margin-top: 20px;
+            background-color: #1A1A1A;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
             text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #007bff;
+        }
+
+        .settings-section {
+            background-color: #262626;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .settings-section h2 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .settings-row label {
+            color: #aaa;
+            flex: 0 0 20%;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .settings-row input[type="text"],
+        .settings-row select {
+            flex: 1;
+            padding: 8px;
+            background-color: #000;
+            border: 1px solid #333;
+            color: #fff;
+            margin-left: 10px;
+            border-radius: 4px;
         }
 
         textarea#content {
@@ -31,32 +83,42 @@
             color: #FFFFFF;
             box-sizing: border-box;
             height: 150px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
         }
 
         button {
+            flex-grow: 1;
             padding: 10px 20px;
             border: none;
             background-color: #007bff;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            margin: 10px 5px;
-            /* Added margin for spacing between buttons */
+            margin: 0 5px;
+            border-radius: 4px;
         }
 
         button:hover {
             background-color: #0056b3;
         }
 
-        div.editing-users {
+        .user-info {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .editing-users {
             background-color: #262626;
-            /* Adjusted to fit the dark theme */
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         ul#editing-users-list {
@@ -70,19 +132,46 @@
 
 <body>
 
-    <div id="content-area">
+    <div class="container">
+        <div class="header">
+            <h1>文档编辑器</h1>
+        </div>
+
+        <div class="settings-section">
+            <h2>文档设置</h2>
+            <div class="settings-row">
+                <label for="doc-name">文档名:</label>
+                <input type="text" id="doc-name" placeholder="输入文档名">
+            </div>
+            <div class="settings-row">
+                <label for="password">密码:</label>
+                <input type="text" id="password" placeholder="输入密码">
+                <span style="flex: 0 0 10%; text-align: center; color: #aaa;">|</span>
+                <label for="permission">权限:</label>
+                <select id="permission">
+                    <option>公开</option>
+                    <option>私有</option>
+                </select>
+            </div>
+        </div>
+
         <textarea id="content" readonly>在此输入内容。</textarea>
-        <br />
-        <button id="edit-button">编辑</button>
-        <button id="save-button">保存</button>
-    </div>
-    <br />
-    <div>当前用户:</div>
-    <div id="user-name-label"> </div>
-    <br />
-    <div className="editing-users">
-        <p id="editing-users-label">同时编辑的用户:</p>
-        <ul id="editing-users-list"></ul>
+        <div class="button-container">
+            <button id="edit-button">编辑</button>
+            <button id="save-button">保存</button>
+        </div>
+
+        <div class="user-info">
+            当前用户:<span id="user-name-label">用户名</span>
+        </div>
+
+        <div className="editing-users">
+            <p id="editing-users-label">同时编辑的用户:</p>
+            <ul id="editing-users-list">
+                <!-- User list items will be dynamically inserted here -->
+            </ul>
+        </div>
+
     </div>
 
 
